@@ -13,7 +13,7 @@ other OS's should be straight forward.
 ## Usage
 1. Download `manga-resizer.sh`
 2. `chmod +x manga-resizer.sh`
-3. run `./manga-resizer.sh [cbz file here]
+3. run `./manga-resizer.sh [cbz file here]`
 
 
 Tip: You can run it for all `.cbz` in a directory with something like:
