@@ -1,13 +1,13 @@
 #!/bin/bash
 
-### This script takes a .cbz file, and runs an ImageMagick command
-### to resize each image with a high quality filter (Lanczos) to the
-### resolution of your reading device. It will create an output .cbz
-### in your current directory.
+# This script takes a .cbz file, and runs an ImageMagick command
+# to resize each image with a high quality filter (Lanczos) to the
+# resolution of your reading device. It will create an output .cbz
+# in your current directory.
 
-### Note: Need to have ImageMagick installed and in PATH. The `unzip`
-### and `zip` commands likely only work on macOS, but modifying for
-### other OS's should be straight forward.
+# Note: Need to have ImageMagick installed and in PATH. The `unzip`
+# and `zip` commands likely only work on macOS, but modifying for
+# other OS's should be straight forward.
 
 # Change this to your device's resolution
 resolution="1640x2360"
@@ -21,16 +21,20 @@ cbzFile="$1"
 cbzBase="$(basename "$1" .cbz)"
 
 # Unzip the original
-echo "Unzipping '${cbzFile}'..."
+echo "Unzipping '${cbzFile}'"
 extractedDir="./${cbzBase}"
 unzip -d "$extractedDir" "$cbzFile" > /dev/null
 
 # Resize all original images
 mkdir ./temp
-echo "Doing magick..."
+total=$(ls -1 "$extractedDir" | wc -l | xargs)
+count=1
 for f in "$extractedDir"/*; do
+    echo -ne "Resizing image ${count}/${total}\r"
     magick "$f" -resize "$resolution" "./temp/$(basename "$f")"
+    ((count=count+1))
 done
+echo
 
 # Delete the unzipped original
 rm -rf "$extractedDir"
