@@ -13,8 +13,8 @@
 resolution="1640x2360"
 
 if [[ ! -f $1 ]] || [[ $1 != *.cbz ]]; then
-    echo "Not a valid .cbz"
-    exit 1
+	echo "Not a valid .cbz"
+	exit 1
 fi
 
 cbzFile="$1"
@@ -22,17 +22,18 @@ cbzBase="$(basename "$1" .cbz)"
 
 # Unzip the original
 echo "Unzipping '${cbzFile}'"
-extractedDir="./${cbzBase}"
-unzip -d "$extractedDir" "$cbzFile" > /dev/null
+extractedDir="/tmp/${cbzBase}"
+unzip -d "$extractedDir" "$cbzFile" >/dev/null
 
 # Resize all original images
-mkdir ./temp
+resizedDir="$extractedDir - Resized"
+mkdir "$resizedDir"
 total=$(ls -1 "$extractedDir" | wc -l | xargs)
 count=1
 for f in "$extractedDir"/*; do
-    echo -ne "Resizing image ${count}/${total}\r"
-    magick "$f" -resize "$resolution" "./temp/$(basename "$f")"
-    ((count=count+1))
+	echo -ne "Resizing image ${count}/${total}\r"
+	magick "$f" -resize "$resolution" "$resizedDir/$(basename "$f")"
+	((count = count + 1))
 done
 echo
 
@@ -41,8 +42,8 @@ rm -rf "$extractedDir"
 
 # Create new .cbz
 newCbz="./${cbzBase} - Resized.cbz"
-zip -r -0 "$newCbz" ./temp > /dev/null
+zip -r -0 "$newCbz" "$resizedDir" >/dev/null
 echo -e "Created new .cbz at '${newCbz}'!\n"
 
 # Delete resized images
-rm -rf ./temp
+rm -rf "$resizedDir"
