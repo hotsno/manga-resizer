@@ -33,7 +33,7 @@ total=$(echo "$images" | wc -l | xargs)
 count=1
 echo "$images" | while read -r image; do
 	echo -ne "Resizing image ${count}/${total}\r"
-	magick "$image" -resize "$resolution" "$resizedDir/$(basename "$image")"
+	magick "$image" -resize "$resolution" -filter Lanczos -quality 100 "$resizedDir/$(basename "$image")"
 	((count = count + 1))
 done
 echo
