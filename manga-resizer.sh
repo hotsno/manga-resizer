@@ -28,11 +28,12 @@ unzip -d "$extractedDir" "$cbzFile" >/dev/null
 # Resize all original images
 resizedDir="$extractedDir - Resized"
 mkdir "$resizedDir"
-total=$(ls -1 "$extractedDir" | wc -l | xargs)
+images="$(find "$extractedDir" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \))"
+total=$(echo "$images" | wc -l | xargs)
 count=1
-for f in "$extractedDir"/*; do
+echo "$images" | while read -r image; do
 	echo -ne "Resizing image ${count}/${total}\r"
-	magick "$f" -resize "$resolution" "$resizedDir/$(basename "$f")"
+	magick "$image" -resize "$resolution" "$resizedDir/$(basename "$image")"
 	((count = count + 1))
 done
 echo
@@ -42,7 +43,7 @@ rm -rf "$extractedDir"
 
 # Create new .cbz
 newCbz="./${cbzBase} - Resized.cbz"
-zip -r -0 "$newCbz" "$resizedDir" >/dev/null
+zip -rj -0 "$newCbz" "$resizedDir" >/dev/null
 echo -e "Created new .cbz at '${newCbz}'!\n"
 
 # Delete resized images
